@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kasi Bites | Fast Self-Order Kiosk & Kitchen Portal</title>
+  <meta name="theme-color" content="#F59E0B">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="js/tailwind-config.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-brand-dark text-gray-100 font-sans antialiased selection:bg-brand-gold selection:text-brand-dark overflow-x-hidden">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <img src="assets/logo.png" alt="Kasi Bites logo">
+    <h1>KASI BITES</h1>
+    <p>Authentic Spatlho &amp; Spykos</p>
+    <div class="bar"><i></i></div>
+  </div>
+
+  <!-- MARQUEES -->
+  <div class="bg-gradient-to-r from-brand-red via-brand-orange to-brand-gold text-brand-dark font-black text-xs sm:text-sm uppercase tracking-wider py-1.5 overflow-hidden select-none">
+    <div class="marquee-track space-x-8">
+      <span>🔥 KASI BITES SPATLHO SPECIAL: 2x Student Kotas + 2 Cans for R85!</span>
+      <span>🧆 NEW: CLASSIC SPYKOS - VETKOEKS WITH MINCE &amp; CHEESE!</span>
+      <span>🍗 1/4 LEG CHICKEN WITH HOT CHIPS &amp; ROLL NOW R48!</span>
+      <span>🔥 KASI BITES SPATLHO SPECIAL: 2x Student Kotas + 2 Cans for R85!</span>
+      <span>🧆 NEW: CLASSIC SPYKOS - VETKOEKS WITH MINCE &amp; CHEESE!</span>
+      <span>🍗 1/4 LEG CHICKEN WITH HOT CHIPS &amp; ROLL NOW R48!</span>
+    </div>
+  </div>
+  <div class="bg-brand-surface text-brand-gold text-[11px] sm:text-xs font-mono py-1 overflow-hidden border-b border-brand-border/60 select-none">
+    <div class="marquee-track space-x-10" style="animation-duration:36s">
+      <span>🕒 MON-WED 08:00-17:00 | THU 08:00-18:00 | FRI 08:00-19:30 | SAT 08:30-19:00 | SUN 09:00-16:00</span>
+      <span>💬 AUTOMATIC WHATSAPP ALERT SENT AS SOON AS YOUR FOOD IS READY!</span>
+      <span>⭐ RATE YOUR MEAL FROM THE LINK IN YOUR WHATSAPP MESSAGE</span>
+      <span>🕒 MON-WED 08:00-17:00 | THU 08:00-18:00 | FRI 08:00-19:30 | SAT 08:30-19:00 | SUN 09:00-16:00</span>
+      <span>💬 AUTOMATIC WHATSAPP ALERT SENT AS SOON AS YOUR FOOD IS READY!</span>
+      <span>⭐ RATE YOUR MEAL FROM THE LINK IN YOUR WHATSAPP MESSAGE</span>
+    </div>
+  </div>
+
+  <!-- HEADER (logo in the corner) -->
+  <header class="sticky top-0 z-40 bg-brand-dark/95 backdrop-blur-md border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="#hero" class="flex items-center gap-3 group">
+        <img src="assets/logo.png" alt="Kasi Bites" class="w-14 h-14 object-contain drop-shadow-[0_0_12px_rgba(245,158,11,.4)] transition-transform group-hover:scale-105">
+        <div>
+          <span class="font-heading text-3xl sm:text-4xl tracking-wider text-brand-gold leading-none block">KASI BITES</span>
+          <div class="flex items-center gap-2 mt-0.5">
+            <span id="storeStatusBadge"></span>
+            <span class="text-[10px] font-mono text-gray-400 hidden sm:inline" id="storeStatusTimeText"></span>
+          </div>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-gray-300">
+        <a href="#schedule" class="hover:text-brand-gold">🕒 Hours</a>
+        <a href="#builder" class="hover:text-brand-gold">🥖 Build Spatlho</a>
+        <a href="#menu" class="hover:text-brand-gold">🍽️ Menu</a>
+        <a href="#specials" class="hover:text-brand-gold">🏷️ Specials</a>
+        <a href="#tracker" class="hover:text-brand-gold">📍 Track Order</a>
+        <a href="#reviews" class="hover:text-brand-gold">⭐ Reviews</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <button id="openInstallModalBtn" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-surface hover:bg-brand-card border border-brand-border text-xs font-bold text-gray-300 hover:text-white">
+          <i class="fa-solid fa-mobile-screen-button text-brand-gold"></i> Install App
+        </button>
+        <button id="openCartBtn" class="btn-gold relative flex items-center gap-2 !px-4 !py-2.5">
+          <i class="fa-solid fa-bag-shopping text-base"></i><span class="hidden sm:inline">My Bag</span>
+          <span id="cartCountBadge" class="w-5 h-5 rounded-full bg-brand-red text-white text-[11px] font-bold flex items-center justify-center border border-brand-dark">0</span>
+        </button>
+        <button id="openMobileDrawerBtn" aria-label="Open menu" class="lg:hidden p-2.5 rounded-xl bg-brand-surface border border-brand-border text-gray-300"><i class="fa-solid fa-bars-staggered text-lg"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE DRAWER -->
+  <div id="mobileDrawerBackdrop" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden">
+    <div id="mobileDrawer" class="fixed inset-y-0 right-0 max-w-xs w-full bg-brand-surface border-l border-brand-border p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300">
+      <div>
+        <div class="flex items-center justify-between pb-5 border-b border-brand-border">
+          <div class="flex items-center gap-2.5"><img src="assets/logo.png" class="w-10 h-10 object-contain" alt=""><span class="font-heading text-2xl text-brand-gold">KASI BITES</span></div>
+          <button id="closeMobileDrawerBtn" class="w-8 h-8 rounded-full bg-brand-card text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <nav class="mt-6 space-y-2 font-semibold text-sm">
+          <a href="#schedule" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">🕒 Trading Hours</a>
+          <a href="#builder" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">🥖 Build Your Kota</a>
+          <a href="#menu" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">🍽️ Menu</a>
+          <a href="#specials" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">🏷️ Hot Combos &amp; Specials</a>
+          <a href="#tracker" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">📍 Live Kitchen Tracker</a>
+          <a href="#reviews" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">⭐ Ratings &amp; Reviews</a>
+          <a href="#legalShield" class="mobile-nav-link block px-3 py-2.5 rounded-xl text-gray-300 hover:bg-brand-card">🛡️ Policies &amp; POPIA</a>
+        </nav>
+      </div>
+      <div class="pt-6 border-t border-brand-border space-y-3">
+        <button id="drawerInstallBtn" class="w-full py-3 bg-brand-card border border-brand-border rounded-xl text-xs font-bold text-brand-gold"><i class="fa-solid fa-download mr-1"></i> Install App to Home Screen</button>
+        <p class="text-[11px] text-gray-500 text-center font-mono">Powered by Mo2IT Incorporations</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero" class="relative py-12 sm:py-20 px-4 overflow-hidden border-b border-brand-border/60">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/25 via-brand-dark to-brand-dark pointer-events-none"></div>
+    <div class="relative max-w-5xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-xs font-bold uppercase tracking-widest mb-6">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Kitchen Kiosk
+      </div>
+      <h1 class="font-heading text-5xl sm:text-7xl lg:text-8xl tracking-wide text-white leading-none mb-4">
+        AUTHENTIC KASI <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-orange to-brand-red">SPATLHO</span> &amp; SPYKOS
+      </h1>
+      <p class="max-w-2xl mx-auto text-gray-300 text-sm sm:text-base mb-8 leading-relaxed">
+        Fresh hollowed quarter loaves, sizzling grilled russians, hot slap chips, fluffy vetkoeks stuffed with mince &amp; cheese, and zesty mango atchar. Order directly from your phone! 🤜🤛
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-md mx-auto">
+        <a href="#builder" class="btn-gold w-full sm:w-auto !px-7 !py-4 text-sm text-center">🥖 Design Your Kota</a>
+        <a href="#menu" class="w-full sm:w-auto px-7 py-4 rounded-xl bg-brand-surface hover:bg-brand-card border border-brand-border text-white font-bold uppercase text-sm hover:border-brand-gold/50 text-center">🍽️ Full Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section id="schedule" class="py-14 px-4 bg-brand-surface/30 border-b border-brand-border/60">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-8">
+        <span class="eyebrow text-blue-400">Schedule &amp; timings</span>
+        <h2 class="h2 mt-1">RESTAURANT OPENING HOURS</h2>
+        <p class="text-xs sm:text-sm text-gray-400 mt-1">We operate 7 days a week with early loaf deliveries.</p>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3" id="weeklyScheduleGrid"></div>
+    </div>
+  </section>
+
+  <!-- KOTA BUILDER -->
+  <section id="builder" class="py-16 sm:py-24 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span class="eyebrow text-brand-orange">Step 1: pick ingredients</span>
+          <h2 class="h2 mt-1">DESIGN YOUR OWN KOTA</h2>
+          <p class="text-xs sm:text-sm text-gray-400">Tap an item to add or remove it from your bread pocket.</p>
+        </div>
+        <button id="resetBuilderBtn" class="self-start md:self-auto text-xs text-gray-400 hover:text-brand-red font-mono py-1.5 px-3 rounded-lg border border-brand-border"><i class="fa-solid fa-rotate-left"></i> Reset Stack</button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-7 panel p-5 sm:p-7 shadow-xl space-y-6">
+          <div><h4 class="text-xs font-bold uppercase tracking-wider text-brand-gold mb-3">🥖 Foundation &amp; Slap Chips</h4><div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="ingGroup-foundation"></div></div>
+          <div><h4 class="text-xs font-bold uppercase tracking-wider text-brand-red mb-3">🌭 Kasi Meats &amp; Sausages</h4><div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="ingGroup-meats"></div></div>
+          <div><h4 class="text-xs font-bold uppercase tracking-wider text-amber-300 mb-3">🧀 Cheeses, Eggs &amp; Veggies</h4><div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="ingGroup-cheeses"></div></div>
+          <div><h4 class="text-xs font-bold uppercase tracking-wider text-brand-orange mb-3">🌶️ Signature Sauces &amp; Bread Lid</h4><div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="ingGroup-sauces"></div></div>
+        </div>
+        <div class="lg:col-span-5 lg:sticky lg:top-24">
+          <div class="panel !border-brand-gold/30 p-6 shadow-glow-gold">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold font-mono uppercase text-brand-gold flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE CUTTING BOARD</span>
+              <span id="cuttingBoardLayerTag" class="text-xs bg-brand-card px-2.5 py-1 rounded-full text-gray-300 font-mono">1 Layers</span>
+            </div>
+            <div class="w-full h-80 bg-gradient-to-b from-brand-dark to-amber-950/20 rounded-2xl border border-brand-border flex flex-col justify-end items-center p-4 relative overflow-hidden">
+              <div class="absolute bottom-2 w-56 h-4 bg-stone-900/90 rounded-full border-t border-stone-700"></div>
+              <div id="visualStackContainer" class="w-full flex flex-col-reverse items-center justify-end z-10"></div>
+            </div>
+            <div class="mt-5 pt-4 border-t border-brand-border space-y-4">
+              <div class="flex items-center justify-between">
+                <div><span class="text-xs font-bold text-gray-400 uppercase block">Quantity for Crew</span><span class="text-[10px] text-gray-500">Make this exact style multiple times</span></div>
+                <div class="flex items-center bg-brand-dark rounded-xl border border-brand-border p-1">
+                  <button id="qtyMinusBtn" class="w-8 h-8 rounded-lg bg-brand-card hover:bg-gray-700 font-bold">-</button>
+                  <span id="qtyCountDisplay" class="w-10 text-center font-mono font-bold text-sm text-brand-gold">1</span>
+                  <button id="qtyPlusBtn" class="w-8 h-8 rounded-lg bg-brand-card hover:bg-gray-700 font-bold">+</button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-2">
+                <div><span class="text-[10px] uppercase font-bold text-gray-400 block">Single Kota: <span id="singleKotaPriceTag"></span></span><div class="font-heading text-4xl text-brand-gold" id="builderTotalPriceDisplay"></div></div>
+                <button id="addCustomKotaBtn" class="btn-gold"><i class="fa-solid fa-cart-plus mr-1"></i> Add To Cart</button>
+              </div>
+              <div class="pt-3 border-t border-brand-border/60"><span class="text-[10px] uppercase font-bold text-gray-400 font-mono">Included layers:</span><div id="includedLayersPills" class="flex flex-wrap gap-1.5 mt-2 max-h-20 overflow-y-auto"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu" class="py-16 sm:py-24 px-4 max-w-7xl mx-auto border-t border-brand-border/60">
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <span class="eyebrow text-brand-gold">Authentic recipes</span>
+      <h2 class="h2 mt-1">FULL MEALS, SPYKOS &amp; CHIPS</h2>
+      <p class="text-xs sm:text-sm text-gray-400 mt-1">From legendary kotas and classic spykos to crispy chicken, slap chips and rice dishes.</p>
+    </div>
+    <div class="flex flex-wrap justify-center gap-2 mb-10" id="menuFilterBar"></div>
+    <div id="menuCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- SPECIALS -->
+  <section id="specials" class="py-16 sm:py-24 px-4 bg-brand-surface/40 border-t border-brand-border/60">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+        <div><span class="eyebrow text-brand-red">Value deals</span><h2 class="h2">TODAY'S SPECIAL COMBOS</h2></div>
+        <p class="text-xs sm:text-sm text-gray-400 max-w-sm mt-1 md:mt-0">Discounted street combos prepared hot and fast.</p>
+      </div>
+      <div id="specialsCardsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- TRACKER -->
+  <section id="tracker" class="py-16 sm:py-24 px-4 max-w-4xl mx-auto border-t border-brand-border/60">
+    <div class="text-center mb-8">
+      <span class="eyebrow text-emerald-400">Live kitchen feed</span>
+      <h2 class="h2 mt-1">ORDER PROGRESS TRACKER</h2>
+      <p class="text-xs sm:text-sm text-gray-400 mt-1">Enter the Order ID from your slip to follow it live.</p>
+    </div>
+    <div class="panel p-5 sm:p-8 shadow-xl">
+      <div class="flex flex-col sm:flex-row items-center gap-3 mb-6">
+        <div class="relative w-full"><i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input type="text" id="trackerSearchInput" placeholder="Enter Order ID (e.g., KB-7F2K9Q)" class="field !pl-11 !py-3 !text-sm font-mono !text-brand-gold uppercase"></div>
+        <button id="trackerSearchBtn" class="btn-gold w-full sm:w-auto whitespace-nowrap !px-6">Find Order</button>
+      </div>
+      <div id="trackerOrderDetailsContainer"></div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="py-16 sm:py-24 px-4 max-w-7xl mx-auto border-t border-brand-border/60">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="eyebrow text-amber-400">Community voices</span>
+      <h2 class="h2 mt-1">CUSTOMER RATINGS &amp; REVIEWS</h2>
+      <p id="reviewsSummary" class="text-sm text-gray-400 mt-1"></p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-5 panel p-6">
+        <h3 class="font-heading text-2xl text-brand-gold mb-1">Leave A Review</h3>
+        <p class="text-xs text-gray-400 mb-5">Tell mzansi how your meal was! Ordered already? Use the rating link in your WhatsApp message.</p>
+        <form id="reviewSubmitForm" class="space-y-4">
+          <div><label class="lbl">Your Name</label><input type="text" id="revName" required maxlength="40" placeholder="e.g., Tshepo Mokoena" class="field"></div>
+          <div><label class="lbl">Meal Ordered</label><select id="revMeal" class="field"></select></div>
+          <div><label class="lbl">Rating</label><div class="flex gap-2 text-2xl" id="starRatingBox"></div></div>
+          <div><label class="lbl">Your Comment</label><textarea id="revComment" rows="3" required maxlength="400" placeholder="How was the flavor, crunch and atchar?" class="field"></textarea></div>
+          <button type="submit" class="btn-gold w-full">Post Review</button>
+        </form>
+      </div>
+      <div class="lg:col-span-7 space-y-3.5" id="communityReviewsFeed"></div>
+    </div>
+  </section>
+
+  <!-- LEGAL -->
+  <section id="legalShield" class="py-12 px-4 bg-brand-surface/20 border-t border-brand-border text-xs text-gray-400">
+    <div class="max-w-7xl mx-auto space-y-4">
+      <div class="text-brand-gold font-bold uppercase tracking-wider text-sm">🛡️ Store Policies &amp; POPIA Compliance</div>
+      <p><strong>Digital Collection Policy:</strong> All digital meal receipts are valid for 2 hours post-order. Uncollected food will be discarded after expiry for health and sanitation reasons without refund.</p>
+      <p><strong>POPIA Notice:</strong> Your WhatsApp number is solely processed to send an order collection alert and rating link. Kasi Bites never sells or redistributes client contact data.</p>
+      <p><strong>Support:</strong> <a class="text-brand-gold underline" href="mailto:mo2itinc@gmail.com">mo2itinc@gmail.com</a></p>
+      <p class="pt-2 text-gray-500 font-mono">Architected &amp; Engineered by <span class="text-gray-300 font-bold">Mo2IT Incorporations</span>.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER (stealth kitchen trigger = tap the logo 3x) -->
+  <footer class="border-t border-brand-border py-8 px-4 text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <button id="stealthTriggerBtn" title="Kasi Bites" class="w-10 h-10 active:scale-90 transition-transform"><img src="assets/logo.png" alt="" class="w-full h-full object-contain"></button>
+        <span class="font-heading text-xl text-white tracking-wider">KASI BITES &copy; 2026</span>
+      </div>
+      <span>Developed by Mo2IT Incorporations</span>
+    </div>
+  </footer>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" class="modal hidden">
+    <div class="panel max-w-md w-full p-6 shadow-2xl relative">
+      <button id="closeCheckoutModalBtn" class="absolute top-5 right-5 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <div class="text-center mb-5"><div class="text-4xl">🍽️</div><h3 class="font-heading text-3xl text-white tracking-wide">CONFIRM YOUR MEAL</h3><p class="text-xs text-gray-400">Where are you dining and how can we notify you?</p></div>
+      <form id="checkoutSubmitForm" class="space-y-4">
+        <div>
+          <label class="lbl">Where will you be eating?</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label id="optDineInLabel" class="flex flex-col items-center p-3 rounded-2xl border-2 cursor-pointer text-center"><input type="radio" name="diningType" value="DINE IN" checked class="hidden"><span class="text-2xl">🪑</span><span class="text-xs font-bold text-white uppercase">Dine In</span><span class="text-[10px] text-gray-400">Eat here at table</span></label>
+            <label id="optTakeawayLabel" class="flex flex-col items-center p-3 rounded-2xl border-2 cursor-pointer text-center"><input type="radio" name="diningType" value="TAKEAWAY" class="hidden"><span class="text-2xl">🛍️</span><span class="text-xs font-bold text-white uppercase">Takeaway</span><span class="text-[10px] text-gray-400">To-go package</span></label>
+          </div>
+          <div id="disabledDiningNotice" class="hidden text-[11px] text-brand-red mt-1.5 font-bold"></div>
+        </div>
+        <div><label class="lbl">Your Name</label><input type="text" id="custNameInput" required maxlength="50" placeholder="e.g., Sipho Gumede" class="field"></div>
+        <div>
+          <label class="lbl">WhatsApp Number <span class="text-emerald-400 text-[10px] font-normal normal-case">(for ready alert &amp; rating link)</span></label>
+          <input type="tel" id="custWhatsappInput" required placeholder="082 875 1285" class="field font-mono">
+        </div>
+        <div class="p-3 bg-brand-dark rounded-xl border border-brand-border flex justify-between items-center text-xs"><span class="text-gray-400">Total Payable:</span><span class="font-heading text-2xl text-brand-gold" id="checkoutModalTotal"></span></div>
+        <button type="submit" id="placeOrderBtn" class="btn-gold w-full !py-3.5 text-sm">Place Order &amp; Generate Slip</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ORDER SUCCESS + SLIP -->
+  <div id="orderSuccessModal" class="modal hidden !z-50">
+    <div class="panel !border-brand-gold/40 max-w-lg w-full p-5 sm:p-7 shadow-2xl relative my-auto">
+      <button id="closeOrderSuccessModalBtn" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-brand-card text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      <div class="text-center py-2">
+        <div class="flex items-center justify-center gap-1 text-5xl sm:text-6xl my-2"><span class="fist-l inline-block">🤜</span><span class="impact inline-block text-3xl">💥</span><span class="fist-r inline-block">🤛</span></div>
+        <div class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold uppercase tracking-widest">✓ Order placed &amp; queued</div>
+        <h3 class="font-heading text-4xl sm:text-5xl text-white tracking-wide mt-2">HOPE YOU ENJOY YOUR MEAL!</h3>
+        <p class="text-xs text-gray-400">Save the digital slip below to present at the collection counter.</p>
+      </div>
+      <div class="mt-4 p-3 bg-brand-dark rounded-xl border border-brand-border flex items-center justify-between">
+        <div><span class="text-[10px] text-gray-400 uppercase font-mono block">Slip validity</span><span class="text-xs font-bold text-white">🕒 Expires after 2 hours</span></div>
+        <div class="text-right"><span class="text-[10px] text-gray-400 uppercase font-mono block">Time remaining</span><span id="countdownTimerDisplay" class="font-mono text-base font-bold text-emerald-400"></span></div>
+      </div>
+      <div class="mt-5 p-1 bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div id="thermalDigitalSlip" class="thermal-receipt p-6 rounded-xl text-center space-y-3">
+          <div class="border-b-2 border-black pb-2"><h4 class="font-heading text-3xl font-black tracking-wider leading-none">KASI BITES</h4><p class="text-[10px] uppercase font-bold tracking-widest mt-0.5">Authentic Spatlho &amp; Spykos</p><p class="text-[9px] text-gray-700">Official Collection Slip</p></div>
+          <div class="text-left text-xs font-mono space-y-1">
+            <div class="flex justify-between font-bold text-sm"><span>ORDER TICKET:</span><span id="slipTicketId"></span></div>
+            <div class="flex justify-between text-[11px]"><span>DATE/TIME:</span><span id="slipDateTime"></span></div>
+            <div class="flex justify-between text-[11px]"><span>CUSTOMER:</span><span id="slipCustomerName"></span></div>
+            <div class="flex justify-between text-[11px]"><span>PREFERENCE:</span><span id="slipDiningMode" class="font-bold"></span></div>
+            <div class="flex justify-between text-[11px]"><span>WHATSAPP:</span><span id="slipWhatsappNum"></span></div>
+          </div>
+          <div class="thermal-dashed pt-2 text-left"><span class="text-[10px] font-bold uppercase block mb-1">ITEMS ORDERED:</span><div id="slipItemsList" class="text-xs space-y-1"></div></div>
+          <div class="thermal-dashed pt-2 flex justify-between items-center text-sm font-black"><span>TOTAL:</span><span id="slipTotalAmount" class="text-lg"></span></div>
+          <div class="border-2 border-black p-2 text-[10px] font-bold"><p class="uppercase">NOTICE: VALID FOR 2 HOURS</p><p class="text-[9px] font-normal" id="slipExpiryTimeLine"></p></div>
+          <div class="font-mono tracking-widest text-xs font-bold">||| | ||||| | || ||||| | |||</div>
+          <p class="text-[9px] tracking-widest uppercase font-bold">HOPE YOU ENJOY YOUR MEAL</p>
+        </div>
+      </div>
+      <div class="mt-4 grid grid-cols-2 gap-3">
+        <button id="saveSlipImageBtn" class="btn-gold !px-3"><i class="fa-solid fa-camera mr-1"></i> Save Screenshot</button>
+        <button id="saveSlipPdfBtn" class="btn-dark !py-3"><i class="fa-solid fa-file-pdf text-brand-red mr-1"></i> Download PDF</button>
+      </div>
+      <button id="trackThisOrderBtn" class="w-full mt-3 text-xs text-gray-400 hover:text-brand-gold">📍 Track this order live</button>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div id="cartDrawerBackdrop" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden">
+    <div id="cartDrawer" class="fixed inset-y-0 right-0 max-w-md w-full bg-brand-surface border-l border-brand-border flex flex-col transform translate-x-full transition-transform duration-300">
+      <div class="p-5 border-b border-brand-border flex items-center justify-between"><h3 class="font-heading text-2xl text-white tracking-wider">🛍️ YOUR BAG</h3><button id="closeCartBtn" class="w-8 h-8 rounded-full bg-brand-card text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>
+      <div id="cartItemsListContainer" class="flex-1 overflow-y-auto p-5 space-y-3"></div>
+      <div class="p-5 border-t border-brand-border bg-brand-dark/80 space-y-3">
+        <div class="flex justify-between text-sm"><span class="text-gray-400">Packaging &amp; Prep:</span><span class="font-mono text-emerald-400">FREE</span></div>
+        <div class="flex justify-between items-center text-lg font-bold text-white pt-2 border-t border-brand-border"><span>Total:</span><span id="cartDrawerTotalDisplay" class="font-heading text-3xl text-brand-gold"></span></div>
+        <button id="cartProceedToOrderBtn" class="btn-gold w-full !py-3.5">Proceed to Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RATE-YOUR-MEAL MODAL (opened from the WhatsApp link ?rate=ORDERID) -->
+  <div id="rateModal" class="modal hidden">
+    <div class="panel max-w-md w-full p-6 shadow-2xl relative">
+      <button id="closeRateModalBtn" class="absolute top-5 right-5 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <div class="text-center mb-4"><div class="text-4xl">⭐</div><h3 class="font-heading text-3xl text-white">RATE YOUR MEAL</h3><p id="rateSubtitle" class="text-xs text-gray-400"></p></div>
+      <div id="rateItems" class="space-y-4 max-h-[55vh] overflow-y-auto"></div>
+      <button id="submitRatingsBtn" class="btn-gold w-full mt-4 !py-3.5">Send my ratings</button>
+    </div>
+  </div>
+
+  <!-- KITCHEN TERMINAL -->
+  <div id="stealthTerminalModal" class="modal hidden !z-50 !p-3 sm:!p-6">
+    <div class="panel !border-brand-gold/40 max-w-5xl w-full shadow-2xl overflow-hidden my-auto">
+      <div class="p-5 bg-brand-dark border-b border-brand-border flex items-center justify-between">
+        <div class="flex items-center gap-3"><img src="assets/logo.png" class="w-10 h-10 object-contain" alt=""><div><h3 class="font-heading text-2xl text-white tracking-wide">KITCHEN TERMINAL</h3><p class="text-[11px] text-gray-400 font-mono" id="terminalWho">Live queue, prices &amp; store controls</p></div></div>
+        <div class="flex items-center gap-2"><button id="signOutBtn" class="hidden btn-dark !py-1.5">Sign out</button><button id="closeTerminalModalBtn" class="w-8 h-8 rounded-full bg-brand-card text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+
+      <div id="terminalLockScreen" class="p-8 text-center max-w-md mx-auto space-y-4">
+        <div class="text-4xl">🔒</div>
+        <h4 class="font-heading text-2xl text-white">Management Sign-in</h4>
+        <p class="text-xs text-gray-400">Only approved manager Google accounts can open the kitchen terminal.</p>
+        <button id="googleAuthBtn" class="w-full py-3 bg-white hover:bg-gray-100 text-gray-900 font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow">
+          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          Sign in with Google
+        </button>
+      </div>
+
+      <div id="terminalMainContent" class="hidden p-5 sm:p-6 space-y-6 max-h-[85vh] overflow-y-auto">
+        <div class="flex border-b border-brand-border gap-4 text-xs font-bold uppercase tracking-wider overflow-x-auto whitespace-nowrap">
+          <button class="terminal-tab-btn pb-3 border-b-2 border-brand-gold text-brand-gold" data-tab="orders">🔥 Queue (<span id="queueBadgeCount">0</span>)</button>
+          <button class="terminal-tab-btn pb-3 text-gray-400 hover:text-white" data-tab="prices">🏷️ Menu &amp; Prices</button>
+          <button class="terminal-tab-btn pb-3 text-gray-400 hover:text-white" data-tab="analytics">📈 Revenue</button>
+          <button class="terminal-tab-btn pb-3 text-gray-400 hover:text-white" data-tab="controls">⚙️ Store &amp; Flyer</button>
+        </div>
+
+        <div id="terminalTabOrders" class="space-y-4">
+          <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-brand-dark p-3.5 rounded-2xl border border-brand-border">
+            <div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-gold text-xs"></i>
+              <input type="text" id="terminalSearchInput" placeholder="Search by order number or customer name..." class="field !pl-9 font-mono"></div>
+            <span id="terminalFilterCount" class="text-xs text-gray-400 font-mono"></span>
+            <span class="text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30 text-[11px]">● Live</span>
+          </div>
+          <div class="overflow-x-auto rounded-2xl border border-brand-border">
+            <table class="w-full text-left text-xs text-gray-300 min-w-[650px]">
+              <thead class="bg-brand-dark uppercase text-gray-400 border-b border-brand-border font-mono text-[11px]"><tr><th class="py-3 px-3.5">Customer</th><th class="py-3 px-3">Ticket</th><th class="py-3 px-3">Type</th><th class="py-3 px-3">Items</th><th class="py-3 px-3">Total</th><th class="py-3 px-3">Stage</th><th class="py-3 px-3 text-center">WhatsApp</th></tr></thead>
+              <tbody id="terminalOrdersTableBody" class="divide-y divide-brand-border bg-brand-surface/70"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Menu & Prices: on/off + price editing with search -->
+        <div id="terminalTabPrices" class="hidden space-y-4">
+          <div class="relative bg-brand-dark p-3.5 rounded-2xl border border-brand-border"><i class="fa-solid fa-magnifying-glass absolute left-7 top-1/2 -translate-y-1/2 text-brand-gold text-xs"></i>
+            <input type="text" id="priceSearchInput" placeholder="Search meals, kota ingredients, specials..." class="field !pl-9"></div>
+          <p class="text-[11px] text-gray-400">Flip the switch to turn an item on or off for customers. Change a price and press Enter (or tap away) to save it.</p>
+          <div id="pricesList" class="space-y-5"></div>
+        </div>
+
+        <div id="terminalTabAnalytics" class="hidden space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-brand-dark p-3.5 rounded-2xl border border-brand-border">
+            <div class="flex flex-wrap gap-2 text-xs font-bold" id="analyticsPeriodFilterGroup"></div>
+            <div class="flex items-center gap-2 text-xs"><span class="text-gray-400 font-mono">Custom:</span>
+              <input type="date" id="analyticsDateFrom" class="field !w-auto !py-1"><span class="text-gray-500">to</span><input type="date" id="analyticsDateTo" class="field !w-auto !py-1">
+              <button id="applyCustomDateBtn" class="px-2.5 py-1 bg-brand-gold text-brand-dark font-bold rounded-lg text-[11px]">Apply</button></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border"><span class="text-[10px] text-gray-400 uppercase font-mono block">Total revenue (ZAR)</span><div class="font-heading text-3xl text-brand-gold mt-1" id="kpiRevenue"></div></div>
+            <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border"><span class="text-[10px] text-gray-400 uppercase font-mono block">Meals &amp; kotas sold</span><div class="font-heading text-3xl text-white mt-1" id="kpiMealsCount"></div></div>
+            <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border"><span class="text-[10px] text-gray-400 uppercase font-mono block">Avg order value</span><div class="font-heading text-3xl text-brand-orange mt-1" id="kpiAvgValue"></div></div>
+          </div>
+          <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border space-y-3"><h5 class="text-xs font-bold uppercase text-brand-gold font-mono">Popular meals</h5><div id="analyticsTopMealsList" class="space-y-2 text-xs"></div></div>
+        </div>
+
+        <div id="terminalTabControls" class="hidden space-y-5">
+          <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border space-y-3">
+            <h5 class="text-xs font-bold uppercase text-brand-gold font-mono">Customer dining controls</h5>
+            <p class="text-xs text-gray-400">Pause Dine-In when the dining room is full, or Takeaway during a rush. Changes show for all customers instantly.</p>
+            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-brand-surface border border-brand-border cursor-pointer flex-1"><span class="switch"><input type="checkbox" id="toggleDineInAllowed" checked><span></span></span><div><span class="text-xs font-bold text-white block">Allow Dine-In</span><span class="text-[10px] text-gray-400">Customers can pick "Dine In"</span></div></label>
+              <label class="flex items-center gap-3 p-3 rounded-xl bg-brand-surface border border-brand-border cursor-pointer flex-1"><span class="switch"><input type="checkbox" id="toggleTakeawayAllowed" checked><span></span></span><div><span class="text-xs font-bold text-white block">Allow Takeaway</span><span class="text-[10px] text-gray-400">Customers can pick "Takeaway"</span></div></label>
+            </div>
+          </div>
+          <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border space-y-4">
+            <div class="flex justify-between items-center"><div><h5 class="text-xs font-bold uppercase text-brand-gold font-mono">Table QR flyer</h5><p class="text-xs text-gray-400">Place on tables or at the door to order instantly.</p></div>
+              <button id="printFlyerBtn" class="btn-dark !py-1.5">🖨️ Print</button></div>
+            <div id="flyerPrint" class="bg-white text-black p-6 rounded-2xl max-w-sm mx-auto text-center space-y-3">
+              <img src="assets/logo.png" alt="" class="w-24 h-24 mx-auto object-contain">
+              <h4 class="font-heading text-3xl font-black tracking-wider leading-none">KASI BITES</h4>
+              <p class="text-xs font-bold uppercase tracking-widest text-brand-orange">Scan to skip the queue!</p>
+              <div class="flex justify-center"><img id="printableTableQrImg" alt="QR Code" class="w-44 h-44 border-4 border-black p-1 rounded-xl"></div>
+              <div class="text-[11px] font-mono leading-tight"><p class="font-bold">1. Point your phone camera at the QR code</p><p>2. Build your spatlho or pick a meal</p><p class="font-bold text-brand-red">3. Get a WhatsApp message once it's ready!</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLLECTED CONFIRM -->
+  <div id="collectedConfirmModal" class="modal hidden !z-[70]">
+    <div class="panel !border-2 !border-brand-red max-w-md w-full p-6 shadow-2xl text-center space-y-4">
+      <div class="text-4xl">⚠️</div>
+      <div><span class="text-[10px] uppercase font-mono tracking-widest text-brand-red font-bold">Critical confirmation</span><h3 class="font-heading text-3xl text-white mt-1">MARK AS COLLECTED?</h3>
+        <p class="text-xs text-gray-300 mt-1">This action is <strong class="text-brand-red underline">FINAL and cannot be reversed</strong>.</p></div>
+      <div class="bg-brand-dark p-4 rounded-2xl border border-brand-border text-left space-y-2 text-xs">
+        <div class="flex justify-between"><span class="text-gray-400 font-mono">ORDER NUMBER:</span><span id="confirmOrderNumBadge" class="font-mono font-bold text-brand-gold"></span></div>
+        <div class="flex justify-between"><span class="text-gray-400 font-mono">CUSTOMER:</span><span id="confirmCustomerNameBadge" class="text-white font-bold truncate max-w-[200px]"></span></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="cancelCollectedConfirmBtn" class="btn-dark !py-3">No, Cancel</button>
+        <button id="executeCollectedConfirmBtn" class="py-3 rounded-xl bg-gradient-to-r from-brand-red to-orange-600 text-white font-black text-xs uppercase shadow-glow-red">✓ Yes, Collected</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTALL MODAL -->
+  <div id="installAppModal" class="modal hidden !z-[70]">
+    <div class="panel max-w-md w-full p-6 shadow-2xl relative text-center space-y-4">
+      <button id="closeInstallModalBtn" class="absolute top-5 right-5 text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      <img src="assets/logo.png" alt="" class="w-20 h-20 mx-auto object-contain">
+      <h3 class="font-heading text-3xl text-white">INSTALL KASI BITES APP</h3>
+      <p class="text-xs text-gray-300">Add Kasi Bites to your Home Screen for full screen ordering and fast loading.</p>
+      <div class="bg-brand-dark p-4 rounded-xl border border-brand-border text-left text-xs space-y-2">
+        <div class="text-brand-gold font-bold"><i class="fa-brands fa-apple"></i> iPhone (Safari):</div><p class="text-gray-400">Tap Share, then <strong>"Add to Home Screen"</strong>.</p>
+        <div class="text-brand-orange font-bold pt-1"><i class="fa-brands fa-android"></i> Android (Chrome):</div><p class="text-gray-400">Tap the three dots, then <strong>"Install app"</strong>.</p>
+      </div>
+      <button id="pwaTriggerInstallBtn" class="btn-gold w-full">Add To Home Screen</button>
+    </div>
+  </div>
+
+  <div id="toastNotificationBox" class="fixed bottom-5 right-5 z-[80] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
